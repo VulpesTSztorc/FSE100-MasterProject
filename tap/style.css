@@ -8,15 +8,26 @@ html, body {
   /*height: auto;*/
 }
 
-.center{
+.col-l{
+  width
+  grid-column: 1;
+}
+.col-r{
+  grid-column: 2;
+}
+.col-double{
+  grid-column: span 2;
+}
+
+.box{
  /* padding: 5px;*/
   border-radius: 12px; 
   height: auto;
-  width: 75vw;
+  width: auto;
   background: white;
   align-items: center;
   place-items: center;
-  padding: 20px;
+  padding: 6px;
   display: flex;
   justify-contents: center;
   flex-direction: column;
