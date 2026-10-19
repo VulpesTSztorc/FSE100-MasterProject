@@ -19,6 +19,16 @@ html, body {
   padding: 10px;
 }
 
+.selection {
+  position: relative;
+  width: 70%;
+  background-color: orange;
+  outline-style: solid;
+  outline-color: black;
+  outline-width: 1px;
+  border
+}
+
 canvas {
   display: block;
 }
