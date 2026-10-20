@@ -1,26 +1,25 @@
 html, body {
+  font-family: "Arial";
   margin-top: 1.5vh;
   padding: 0;
   background: #cfe2f3;
   display: grid;
   align-items: center;
   place-items: center;
+  width: auto;
   /*height: auto;*/
 }
 
-.col-l{
-  width
-  grid-column: 1;
-}
-.col-r{
-  grid-column: 2;
-}
-.col-double{
-  grid-column: span 2;
+.titlebox{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-contents: left;
 }
 
 .box{
  /* padding: 5px;*/
+  margin-top: 1.5vh;
   border-radius: 12px; 
   height: auto;
   width: auto;
@@ -34,6 +33,7 @@ html, body {
 }
 
 .selection {
+  font: inherit;
   border-radius: 12px;
   font-size: 24px;
   position: relative;
@@ -44,6 +44,30 @@ html, body {
   margin-bottom: 2vh;
 }
 .selection:hover{
+  background-color: orange;
+}
+
+.title{
+  text-align: center;
+  padding: 7px;
+  font: inherit;
+  border-radius: 12px;
+  font-size: 24px;
+  background-color: #FFFFFF;
+  border: none;
+  flex: 1;
+}
+
+.titlebutton{
+  text-align: center;
+  padding: 7px;
+  font: inherit;
+  border-radius: 12px;
+  font-size: 24px;
+  background-color: #FFFFFF;
+  border: none;
+}
+.titlebutton:hover{
   background-color: orange;
 }
 
