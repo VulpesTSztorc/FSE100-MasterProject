@@ -14,18 +14,18 @@ function balloon(x,y,d,c){
 
 function draw() {
   background("#FFFFFF");
-  let balX = CANV_W/2;
-  let balY = CANV_H/2;
-  let balD = CANV_W/10;
+  var balArr = [[200,100,100],[500,100,100]];
 
-
-  let inBound = (dist(balX,balY,mouseX,mouseY) < balD/2);
+  for(const i in balArr){
+    let actArr = balArr[i];
+    let inBound = (dist(actArr[0],actArr[1],mouseX,mouseY) < actArr[2]/2);
     
-  if(inBound){
-    balC = "#00FF00";
-  } else {
-    balC = "#FF0000";
+    if(inBound){
+      balC = "#00FF00";
+    } else {
+      balC = "#FF0000";
+    }
+    balloon(actArr[0],actArr[1],actArr[2],balC);
   }
   
-  balloon(balX,balY,balD,balC);
 }
