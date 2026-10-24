@@ -54,18 +54,22 @@ function spawnBalloon(arr){
 function main() {
   fill("#000000");
   background("#FFFFFF");
-  
+
+  //check if ball needs to be respawned/created
   if(newBal){
     spawnBalloon(balArr);
     newBal = false;
   }
 
+  //render each ball
   for(let i in balArr){
     let actArr = balArr[i];
+    //manage frame rate and speed. set to 120.
     if(mils(1000/120)){
       actArr[1] -= 4;
     }
-    
+
+    //check if mouse is inside current ball
     let inBound = (dist(actArr[0],actArr[1],mouseX,mouseY) <= actArr[2]);
     if(inBound){
       fill("#FF2a2a");
@@ -140,3 +144,4 @@ function draw(){
   }
 }
 //dont grade on readability plzzzz. it works! idk how but it does! :3
+//jokes aside, its ugly as balls, but i understand it.
