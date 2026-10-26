@@ -59,6 +59,9 @@ function main() {
   if(newBal){
     spawnBalloon(balArr);
     newBal = false;
+    if(score % 3 == 0){
+      spawnBalloon(balArr);
+    }
   }
 
   //render each ball
@@ -86,7 +89,7 @@ function main() {
     //detect clicks and out of bounds. detract lives if out of bounds
     if(actArr[1]<0-actArr[2] || destroy){
       if(!destroy) lives--;
-      balArr.splice(i);
+      balArr.splice(i,1);
       destroy = false;
       newBal = true;
       //quit if all lives lost
