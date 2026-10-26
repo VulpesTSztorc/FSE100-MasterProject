@@ -43,8 +43,11 @@ var osc;
 var beepEnd = 0;           
 
 function setup() {
-  createCanvas(700, 480);
+   let cnv = createCanvas(CANV_W,CANV_H);
+  cnv.parent('canvas-box');
+
   textAlign(CENTER, CENTER);
+
 
   osc = new p5.Oscillator("sine");
   osc.amp(0);
