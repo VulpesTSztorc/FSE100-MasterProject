@@ -3,6 +3,7 @@
 //predefine global vars
 let newBal = false;
 let destroy = false;
+let update = false;
 let score = 0;
 let lives = 0;
 var balArr = [];
@@ -24,7 +25,7 @@ function resetSketch(){
   score = 0;
   lives = 3;
   for(let i in balArr)
-    ballArr.splice(i);
+    balArr.splice(i);
 }
 
 //define function to check intervals
@@ -44,7 +45,9 @@ function mils(x){
 function spawnBalloon(arr){
   let tmpRad = 50;
   let tmpX = random(0+tmpRad,CANV_W-tmpRad);
-  let tmpY = CANV_H+tmpRad;
+  //console.log("rand" + tmpX);
+  //let tmpY = CANV_H+tmpRad;
+  let tmpY = CANV_H;
   let tmpDir = 0;
   let tmpVel = 1;
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
@@ -58,17 +61,20 @@ function main() {
   //check if ball needs to be respawned/created
   if(newBal){
     spawnBalloon(balArr);
-    newBal = false;
-    if(score % 3 == 0){
+    if(score != 0 && score%(3*3) == 0){
       spawnBalloon(balArr);
+      console.log("Adding balloon");
     }
+    newBal = false;
   }
 
   //render each ball
-  for(let i in balArr){
+  //for(let i in balArr){
+  if(mils(1000/120)) update = true;
+  for(let i=0;i<balArr.length;i++){
     let actArr = balArr[i];
     //manage frame rate and speed. set to 120.
-    if(mils(1000/120)){
+    if(update){
       actArr[1] -= 4;
     }
 
@@ -96,6 +102,7 @@ function main() {
       if(lives <= 0) return 1;
     }
   }
+  update=false;
 }
 
 //game/menu logic loop. lowkey halfassed cause sleep deprived.
