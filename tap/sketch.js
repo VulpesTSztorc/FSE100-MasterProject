@@ -6,6 +6,7 @@ let destroy = false;
 let update = false;
 let diff = 0;
 let score = 0;
+let scoreOld = 0;
 let lives = 0;
 var balArr = [];
 
@@ -25,6 +26,8 @@ function resetSketch(){
   destroy = false;
   diff = 1;
   score = 0;
+  //scoreOld also acts as difficulty change scaler
+  scoreOld = 4;
   lives = 3;
   for(let i in balArr)
     balArr.splice(i);
@@ -47,11 +50,10 @@ function mils(x){
 function spawnBalloon(arr){
   let tmpRad = 50;
   let tmpX = random(0+tmpRad,CANV_W-tmpRad);
-  //console.log("rand" + tmpX);
   let tmpY = CANV_H+tmpRad;
   //let tmpY = CANV_H;
   let tmpDir = 0;
-  let tmpVel = 1;
+  let tmpVel = random(1,diff);
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
 }
 
@@ -63,9 +65,11 @@ function main() {
   //check if ball needs to be respawned/created
   if(newBal){
     spawnBalloon(balArr);
-    if(score != 0 && score%(3*2) == 0){
+    if(score != 0 && (score-scoreOld)%(scoreOld) == 0){
       spawnBalloon(balArr);
-      console.log("Adding balloon");
+      console.log(score + ": " + balArr.length);
+      scoreOld += score;
+      diff++;
     }
     newBal = false;
   }
@@ -77,7 +81,7 @@ function main() {
     let actArr = balArr[i];
     //manage frame rate and speed. set to 120.
     if(update){
-      actArr[1] -= 4;
+      actArr[1] -= actArr[3];
     }
 
     //check if mouse is inside current ball
