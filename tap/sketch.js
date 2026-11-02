@@ -4,6 +4,7 @@
 let newBal = false;
 let destroy = false;
 let update = false;
+let diff = 0;
 let score = 0;
 let lives = 0;
 var balArr = [];
@@ -22,6 +23,7 @@ function setup() {
 function resetSketch(){
   newBal = true;
   destroy = false;
+  diff = 1;
   score = 0;
   lives = 3;
   for(let i in balArr)
@@ -46,8 +48,8 @@ function spawnBalloon(arr){
   let tmpRad = 50;
   let tmpX = random(0+tmpRad,CANV_W-tmpRad);
   //console.log("rand" + tmpX);
-  //let tmpY = CANV_H+tmpRad;
-  let tmpY = CANV_H;
+  let tmpY = CANV_H+tmpRad;
+  //let tmpY = CANV_H;
   let tmpDir = 0;
   let tmpVel = 1;
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
@@ -61,7 +63,7 @@ function main() {
   //check if ball needs to be respawned/created
   if(newBal){
     spawnBalloon(balArr);
-    if(score != 0 && score%(3*3) == 0){
+    if(score != 0 && score%(3*2) == 0){
       spawnBalloon(balArr);
       console.log("Adding balloon");
     }
@@ -85,6 +87,7 @@ function main() {
       if(mouseIsPressed){
         destroy = true;
         score++;
+        //if(score % 3 == 0) dif++;
       }
     } else {
       fill("#FF0000");
