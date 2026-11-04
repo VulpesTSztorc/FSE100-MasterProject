@@ -3,7 +3,7 @@
 //predefine global vars
 let newBal = false;
 let destroy = false;
-let update = false;
+//let update = false;
 let diff = 0;
 let score = 0;
 let scoreOld = 0;
@@ -13,11 +13,12 @@ var balArr = [];
 //define canvas size
 const CANV_H = 750;
 const CANV_W = 1000;
+const FPS    = 120;
 function setup() {
   //link canvas size to HTML
   let cnv = createCanvas(CANV_W,CANV_H);
   cnv.parent('canvas-box');
-
+  frameRate(FPS);
   resetSketch();
 }
 
@@ -57,6 +58,33 @@ function spawnBalloon(arr){
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
 }
 
+function drawGameover(){
+  //me when im in an unreadable code competition and my
+  //opponent is Tomas. 
+  background("#aaaaaa");
+  //game over box
+  fill("#ffffff");
+  stroke("#ffffff");
+  rect(CANV_W/2-RECT_W/2,CANV_H/2-RECT_H/2,RECT_W,RECT_H,12);
+  //"GAME OVER"
+  fill(0);
+  stroke(0);
+  textAlign(CENTER,TOP);
+  textSize(48);
+  text("GAME OVER",CANV_W/2,CANV_H/2-(RECT_H/2-15));
+  //score display
+  textSize(32);
+  text("Score: " + score,CANV_W/2,CANV_H/2-(RECT_H/2-64));
+  //restart directions
+  textSize(24);
+  textAlign(CENTER,BOTTOM);
+  text("Click anywhere to restart!",CANV_W/2,CANV_H/2+(RECT_H/2-15));
+  if(mouseIsPressed){
+    resetSketch();
+    game=true;
+  }
+}
+
 //main loop here we go
 function main() {
   fill("#000000");
@@ -76,13 +104,12 @@ function main() {
 
   //render each ball
   //for(let i in balArr){
-  if(mils(1000/120)) update = true;
+  //if(mils(1000/120)) update = true;
+  //update=true;
   for(let i=0;i<balArr.length;i++){
     let actArr = balArr[i];
     //manage frame rate and speed. set to 120.
-    if(update){
-      actArr[1] -= actArr[3];
-    }
+    actArr[1] -= actArr[3];
 
     //check if mouse is inside current ball
     let inBound = (dist(actArr[0],actArr[1],mouseX,mouseY) <= actArr[2]);
@@ -91,7 +118,6 @@ function main() {
       if(mouseIsPressed){
         destroy = true;
         score++;
-        //if(score % 3 == 0) dif++;
       }
     } else {
       fill("#FF0000");
@@ -109,11 +135,8 @@ function main() {
       if(lives <= 0) return 1;
     }
   }
-  update=false;
 }
 
-//game/menu logic loop. lowkey halfassed cause sleep deprived.
-//it works. dont look into it.
 let game = true;
 //for GAME OVER menu
 RECT_W = 400;
@@ -134,30 +157,7 @@ function draw(){
     text(score,5,35);
   //run main menu instead
   } else {
-    //me when im in an unreadable code competition and my
-    //opponent is Tomas. 
-    background("#aaaaaa");
-    //game over box
-    fill("#ffffff");
-    stroke("#ffffff");
-    rect(CANV_W/2-RECT_W/2,CANV_H/2-RECT_H/2,RECT_W,RECT_H,12);
-    //"GAME OVER"
-    fill(0);
-    stroke(0);
-    textAlign(CENTER,TOP);
-    textSize(48);
-    text("GAME OVER",CANV_W/2,CANV_H/2-(RECT_H/2-15));
-    //score display
-    textSize(32);
-    text("Score: " + score,CANV_W/2,CANV_H/2-(RECT_H/2-64));
-    //restart directions
-    textSize(24);
-    textAlign(CENTER,BOTTOM);
-    text("Click anywhere to restart!",CANV_W/2,CANV_H/2+(RECT_H/2-15));
-    if(mouseIsPressed){
-      resetSketch();
-      game = true;
-    }
+    drawGameover();
   }
 }
 //dont grade on readability plzzzz. it works! idk how but it does! :3
