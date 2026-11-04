@@ -9,16 +9,21 @@ let score = 0;
 let scoreOld = 0;
 let lives = 0;
 var balArr = [];
+let initVal = 4;
 
 //define canvas size
 const CANV_H = 750;
 const CANV_W = 1000;
 const FPS    = 120;
+
+//define start menu buttons
+
 function setup() {
   //link canvas size to HTML
   let cnv = createCanvas(CANV_W,CANV_H);
   cnv.parent('canvas-box');
   frameRate(FPS);
+  
   resetSketch();
 }
 
@@ -28,7 +33,7 @@ function resetSketch(){
   diff = 1;
   score = 0;
   //scoreOld also acts as difficulty change scaler
-  scoreOld = 4;
+  scoreOld = initVal;
   lives = 3;
   for(let i in balArr)
     balArr.splice(i);
@@ -56,6 +61,64 @@ function spawnBalloon(arr){
   let tmpDir = 0;
   let tmpVel = random(1,diff);
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
+}
+
+/*
+const TBOX_H = 65;
+const TBOX_W = 400;
+const DIFF_H = 40;
+const DIFF_W = 60;
+
+function drawStart(){
+  background("#aaaaaa");
+  fill("#ffffff");
+  stroke("#ffffff");
+  //draw static elements
+  rect(CANV_W/2-TBOX_W/2,CANV_H/2-TBOX_H/2-170,TBOX_W,TBOX_H,12);
+  rect(CANV_W/2-DIFF_W/2,CANV_H/2-DIFF_H/2-100,DIFF_W,DIFF_H,12);
+
+  //draw buttons
+  if(mouseX<)
+  rect
+  
+  stroke(0);
+  fill(0);
+  textAlign(CENTER,CENTER);
+  textWrap(WORD);
+  textSize(16);
+  text("Value below determines after how many balls the game gets harder. Press start to begin.",
+  CANV_W/2-TBOX_W/2,CANV_H/2-TBOX_H/2-(170-TBOX_H/2),TBOX_W-5);
+
+  textSize(32);
+  text(initVal,CANV_W/2-DIFF_W/2,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),DIFF_W-5);
+  
+}
+*/
+
+function drawStart(){
+  background("#aaaaaa");
+  //game over box
+  fill("#ffffff");
+  stroke("#ffffff");
+  rect(CANV_W/2-RECT_W/2,CANV_H/2-RECT_H/2,RECT_W,RECT_H,12);
+  //"GAME OVER"
+  fill(0);
+  stroke(0);
+  textAlign(CENTER,TOP);
+  textSize(48);
+  text("WELCOME",CANV_W/2,CANV_H/2-(RECT_H/2-15));
+  //score display
+  textSize(32);
+  //text("Score: " + score,CANV_W/2,CANV_H/2-(RECT_H/2-64));
+  //restart directions
+  textSize(24);
+  textAlign(CENTER,BOTTOM);
+  text("Click anywhere to begin!",CANV_W/2,CANV_H/2+(RECT_H/2-15));
+  if(mouseIsPressed){
+    resetSketch();
+    game=true;
+    stMenu=false;
+  }
 }
 
 function drawGameover(){
@@ -137,7 +200,8 @@ function main() {
   }
 }
 
-let game = true;
+let game = false;
+let stMenu = true;
 //for GAME OVER menu
 RECT_W = 400;
 RECT_H = 200;
@@ -156,6 +220,8 @@ function draw(){
     textSize(32);
     text(score,5,35);
   //run main menu instead
+  } else if(stMenu) {
+    drawStart();
   } else {
     drawGameover();
   }
