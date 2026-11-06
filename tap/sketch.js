@@ -63,23 +63,38 @@ function spawnBalloon(arr){
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
 }
 
-/*
+
 const TBOX_H = 65;
 const TBOX_W = 400;
+const TBOX_X = CANV_W/2-TBOX_W/2;
+const TBOX_Y = CANV_H/2-TBOX_H/2-170;
+
 const DIFF_H = 40;
 const DIFF_W = 60;
+const DIFF_X = CANV_W/2-DIFF_W/2;
+const DIFF_Y = CANV_H/2-DIFF_H/2-100;
+
+const BU_H   = DIFF_H;
+const BU_W   = DIFF_W;
+const BUMI_X = CANV_W/2-DIFF_W-DIFF_W/2-10;
+const BUMI_Y = CANV_H/2-DIFF_H/2-100;
+const BUPL_X = CANV_W/2+DIFF_W/2+10;
+const BUPL_Y = CANV_H/2-DIFF_H/2-100;
+
+const STRT_H = 40;
+const STRT_W = 200;
+const STRT_X = CANV_W/2-STRT_W/2
+const STRT_Y = DIFF_Y + (STRT_H+15)
+
+var mouseIncr = 0;
 
 function drawStart(){
   background("#aaaaaa");
   fill("#ffffff");
   stroke("#ffffff");
   //draw static elements
-  rect(CANV_W/2-TBOX_W/2,CANV_H/2-TBOX_H/2-170,TBOX_W,TBOX_H,12);
-  rect(CANV_W/2-DIFF_W/2,CANV_H/2-DIFF_H/2-100,DIFF_W,DIFF_H,12);
-
-  //draw buttons
-  if(mouseX<)
-  rect
+  rect(TBOX_X,TBOX_Y,TBOX_W,TBOX_H,12);
+  rect(DIFF_X,DIFF_Y,DIFF_W,DIFF_H,12);
   
   stroke(0);
   fill(0);
@@ -87,14 +102,61 @@ function drawStart(){
   textWrap(WORD);
   textSize(16);
   text("Value below determines after how many balls the game gets harder. Press start to begin.",
-  CANV_W/2-TBOX_W/2,CANV_H/2-TBOX_H/2-(170-TBOX_H/2),TBOX_W-5);
+  TBOX_X,CANV_H/2-TBOX_H/2-(170-TBOX_H/2),TBOX_W-5);
 
   textSize(32);
-  text(initVal,CANV_W/2-DIFF_W/2,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),DIFF_W-5);
+  text(initVal,DIFF_X,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),DIFF_W-5);
+
+  if(mouseIsPressed){
+    mouseIncr++;
+  } else {
+    mouseIncr = 0;
+  }
+
+  //minus
+  if(mouseX<BUMI_X+BU_W && mouseX>BUMI_X && mouseY<BUMI_Y+BU_H && mouseY>BUMI_Y){
+    fill("green");
+    if(mouseIncr==1 && initVal > 1)
+      initVal--;
+  } else {
+    fill("white");
+  }
+  rect(BUMI_X,BUMI_Y,BU_W,BU_H,12);
+  fill(0);
+  text('-',BUMI_X,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),BU_W-5);
+
+  //plus
+  if(mouseX<BUPL_X+BU_W && mouseX>BUPL_X && mouseY<BUPL_Y+BU_H && mouseY>BUPL_Y){
+    fill("green");
+    if(mouseIncr==1)
+      initVal++;
+  } else {
+    fill("white");
+  }
+  rect(BUPL_X,BUPL_Y,BU_W,BU_H,12);
+  fill(0);
+  text('+',BUPL_X,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),BU_W-5);
+
+  //start
+  if(mouseX<STRT_X+STRT_W && mouseX>STRT_X && mouseY<STRT_Y+STRT_W && mouseY>STRT_Y){
+    fill("green");
+    if(mouseIsPressed){
+      resetSketch();
+      game=true;
+      stMenu=false;
+    }
+  } else {
+    fill("white");
+  }
+  rect(STRT_X,STRT_Y,STRT_W,STRT_H,12);
+  fill(0);
+  text("start",STRT_X,STRT_Y+20,STRT_W-5);
+  
   
 }
-*/
 
+
+/*
 function drawStart(){
   background("#aaaaaa");
   //game over box
@@ -120,6 +182,7 @@ function drawStart(){
     stMenu=false;
   }
 }
+*/
 
 function drawGameover(){
   //me when im in an unreadable code competition and my
