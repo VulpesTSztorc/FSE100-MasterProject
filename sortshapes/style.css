@@ -1,0 +1,76 @@
+html, body {
+  font-family: "Arial";
+  margin-top: 1.5vh;
+  padding: 0;
+  background: #cfe2f3;
+  display: grid;
+  align-items: center;
+  place-items: center;
+  width: auto;
+  /*height: auto;*/
+}
+
+.titlebox{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-contents: left;
+}
+
+.box{
+ /* padding: 5px;*/
+  margin-top: 1.5vh;
+  border-radius: 12px; 
+  height: auto;
+  width: auto;
+  background: white;
+  align-items: center;
+  place-items: center;
+  padding: 6px;
+  display: flex;
+  justify-contents: center;
+  flex-direction: column;
+}
+
+.selection {
+  font: inherit;
+  border-radius: 12px;
+  font-size: 24px;
+  position: relative;
+  width: 50vw;
+  background-color: #cfe2f3;
+  border: 1px solid #000000;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+}
+.selection:hover{
+  background-color: orange;
+}
+
+.title{
+  text-align: center;
+  padding: 7px;
+  font: inherit;
+  border-radius: 12px;
+  font-size: 24px;
+  background-color: #FFFFFF;
+  border: none;
+  flex: 1;
+}
+
+.titlebutton{
+  text-align: center;
+  padding: 7px;
+  font: inherit;
+  border-radius: 12px;
+  font-size: 24px;
+  background-color: #FFFFFF;
+  border: none;
+}
+.titlebutton:hover{
+  background-color: orange;
+}
+
+canvas {
+  display: block;
+}
