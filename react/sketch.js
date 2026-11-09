@@ -1,59 +1,67 @@
+var CANV_W = 700;
+var CANV_H = 480;
+
+
 var gameState = "start";   
 
-var letters = [];         
-var litIndex = -1;       
+var letters = [];          
+var litIndex = -1;         
 var lettersLeft = 12;     
 
 var waitUntil = 0;         
 var cueTime = 0;           
-var timeLimit = 5000;     
+var timeLimit = 5000;      
 
-var minWait = 1000;     
-var maxWait = 5000;        
+var minWait = 1000;        
+var maxWait = 5000;
 
-var countdownStart = 0;  
-var lastStage = -1;        
-var stageLength = 800;     
+
+var countdownStart = 0;    
+var lastStage = -1;       
+var stageLength = 800;    
+
 
 var decoyColors = ["blue", "green", "purple", "orange"];
-var decoyChance = 0.3;    
-var decoyTime = 1500;     
-var litIsDecoy = false;    
-var litColor = "red";     
+var decoyChance = 0.3;     
+var decoyTime = 1500;      
+var litIsDecoy = false;   
+var litColor = "red";      
 
 
 var PENALTY_MS = 500;      
-var earlyCount = 0;       
+var earlyCount = 0;      
 var decoyHits = 0;         
 var decoysAvoided = 0;     
 
-
-var messageText = "";     
+var messageText = "";      
 var messageColor = "white";
-var messageUntil = 0;      
+var messageUntil = 0;     
 
 var times = [];            
 var wrongCount = 0;        
-var missedCount = 0;      
+var missedCount = 0;       
 
-var sessionBest = 0;      
+
+var sessionBest = 0;       
 var gamesPlayed = 0;
 
-var osc;                  
-var beepEnd = 0;           
+var audioCtx = null;      
+
 
 function setup() {
-   let cnv = createCanvas(CANV_W,CANV_H);
-  cnv.parent('canvas-box');
-
+  let cnv = createCanvas(CANV_W, CANV_H);
+  
+ let holder = document.getElementById('canvas-box');
+      console.log(holder)
+  if (holder) {
+    cnv.parent('canvas-box');
+  }
+  
   textAlign(CENTER, CENTER);
-
-
-  osc = new p5.Oscillator("sine");
-  osc.amp(0);
 
   makeLetters();
 }
+
 
 function makeLetters() {
   letters = [
@@ -73,25 +81,27 @@ function makeLetters() {
   lettersLeft = letters.length;
 }
 
-function draw() {
-  background(207, 224, 242); 
 
-  fill("white");
-  stroke("black");
-  rect(0, 0, width, 410);
+
+function draw() {
+     
+  background("white");
+ 
+  
 
   checkTimers();
 
   if (gameState == "start") {
     drawHomePage();
-  } else if (gameState == "instructions") {   // NEW
+  } else if (gameState == "instructions") {
     drawInstructions();
   } else if (gameState == "done") {
     drawResults();
-  } else if (gameState == "countdown") {      // NEW
+  } else if (gameState == "countdown") {
     drawGetReady();
     drawHomeButton();
   } else {
+    
     noStroke();
     fill("black");
     textSize(24);
@@ -106,21 +116,20 @@ function draw() {
   drawFooter();
 }
 
-function checkTimers() {
-  if (beepEnd > 0 && millis() > beepEnd) {
-    osc.amp(0, 0.05);
-    beepEnd = 0;
-  }
 
+
+function checkTimers() {
+
+  
   if (gameState == "countdown") {
     var stage = floor((millis() - countdownStart) / stageLength);
 
-    if (stage != lastStage) {      
+    if (stage != lastStage) {        
       lastStage = stage;
       if (stage == 0 || stage == 1) {
         playBeep(500);                 
       } else if (stage == 2) {
-        playBeep(1000);               
+        playBeep(1000);                
       }
     }
 
@@ -128,16 +137,19 @@ function checkTimers() {
       startNextRound();
     }
   }
+
   if (gameState == "waiting" && millis() >= waitUntil) {
     lightUpLetter();
   }
 
   if (gameState == "cued") {
     if (litIsDecoy == true && millis() - cueTime >= decoyTime) {
+      
       decoysAvoided = decoysAvoided + 1;
       showMessage("Decoy ignored!", "lightgreen");
       startNextRound();
     } else if (litIsDecoy == false && millis() - cueTime >= timeLimit) {
+      
       missedCount = missedCount + 1;
       showMessage("Too slow! +" + PENALTY_MS + " ms", "gold");
       startNextRound();
@@ -198,6 +210,7 @@ function drawInstructions() {
   text("Clicking too early, the wrong letter, a decoy, or being too slow", width / 2, 280);
   text("adds a " + PENALTY_MS + " ms penalty to your score.", width / 2, 302);
 
+  // Got it button
   fill(66, 133, 244);
   stroke("black");
   rect(260, 335, 180, 50, 12);
@@ -231,7 +244,7 @@ function drawResults() {
   var average = getAverage();
   var fastest = getFastest();
   var slowest = getSlowest();
-  var penalties = getPenaltyCount();   
+  var penalties = getPenaltyCount();
 
   var accuracy = 0;
   if (correct + penalties > 0) {
@@ -254,7 +267,7 @@ function drawResults() {
   text("Score with penalties: " + getScore() + " ms", width / 2, 145);
   textSize(14);
   text("(" + penalties + " mistakes x " + PENALTY_MS + " ms added)", width / 2, 167);
- 
+
   fill("black");
   textSize(18);
   textAlign(LEFT, CENTER);
@@ -264,11 +277,11 @@ function drawResults() {
   text("Accuracy: " + accuracy + "%",       190, 276);
   text("Best ever: " + sessionBest + " ms", 190, 303);
 
-  text("Too early: " + earlyCount,          400, 195);  
+  text("Too early: " + earlyCount,          400, 195);
   text("Wrong letters: " + wrongCount,      400, 222);
-  text("Decoys clicked: " + decoyHits,      400, 249);   
+  text("Decoys clicked: " + decoyHits,      400, 249);
   text("Too slow: " + missedCount,          400, 276);
-  text("Decoys ignored: " + decoysAvoided,  400, 303);  
+  text("Decoys ignored: " + decoysAvoided,  400, 303);
   textAlign(CENTER, CENTER);
 
   textSize(18);
@@ -316,7 +329,7 @@ function drawLetters() {
   for (var i = 0; i < letters.length; i++) {
     if (letters[i].visible == true) {
       if (i == litIndex) {
-        fill(litColor);  
+        fill(litColor);    
       } else {
         fill("gray");
       }
@@ -329,11 +342,11 @@ function drawMessage() {
   if (millis() < messageUntil) {
     fill(messageColor);
     stroke("black");
-    rect(10, 10, 230, 45, 8);  
+    rect(10, 10, 230, 45, 8);
     noStroke();
     fill("black");
     textSize(16);
-    text(messageText, 125, 33);  
+    text(messageText, 125, 33);
   }
 }
 
@@ -343,7 +356,7 @@ function drawCountdown() {
     fill("black");
     noStroke();
     textSize(28);
-    text(secondsLeft, 670, 30);
+    text(String(secondsLeft), 670, 30);
   }
 }
 
@@ -362,14 +375,14 @@ function getFastest() {
   if (times.length == 0) {
     return 0;
   }
-  return min(times);   
+  return Math.min.apply(null, times);  
 }
 
 function getSlowest() {
   if (times.length == 0) {
     return 0;
   }
-  return max(times);   
+  return Math.max.apply(null, times);  
 }
 
 function getRating(avg) {
@@ -402,17 +415,39 @@ function getScore() {
   return round(total / times.length);
 }
 
+function getAudio() {
+  if (audioCtx == null) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AC();
+  }
+  if (audioCtx.state == "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playBeep(pitch) {
+  try {
+    var ctx = getAudio();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = pitch;
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);   
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);  
+  } catch (e) {
+    
+  }
+}
+
 function showMessage(msg, col) {
   messageText = msg;
   messageColor = col;
   messageUntil = millis() + 1500;
-}
-
-function playBeep(pitch) {
-  osc.freq(pitch);
-  osc.start();
-  osc.amp(0.3, 0.02);
-  beepEnd = millis() + 200;  
 }
 
 function startGame() {
@@ -420,15 +455,14 @@ function startGame() {
   times = [];
   wrongCount = 0;
   missedCount = 0;
-  earlyCount = 0;        
-  decoyHits = 0;         
-  decoysAvoided = 0;     
+  earlyCount = 0;
+  decoyHits = 0;
+  decoysAvoided = 0;
   messageUntil = 0;
 
-  // was: startNextRound();
   gameState = "countdown";        
-  countdownStart = millis();      
-  lastStage = -1;                 
+  countdownStart = millis();
+  lastStage = -1;
 }
 
 function goHome() {
@@ -446,7 +480,7 @@ function startNextRound() {
   }
 
   gameState = "waiting";
-  waitUntil = millis() + random(minWait, maxWait);  
+  waitUntil = millis() + random(minWait, maxWait);   
 }
 
 function finishGame() {
@@ -460,16 +494,16 @@ function finishGame() {
 
 function lightUpLetter() {
   var choice = floor(random(letters.length));
-  while (letters[choice].visible == false) {  
+  while (letters[choice].visible == false) {   
     choice = floor(random(letters.length));
   }
   litIndex = choice;
-  cueTime = millis();   
+  cueTime = millis();      
   gameState = "cued";
 
   if (random() < decoyChance) {
     litIsDecoy = true;
-    litColor = random(decoyColors);  
+    litColor = random(decoyColors);   
     playBeep(500);
   } else {
     litIsDecoy = false;
@@ -478,28 +512,29 @@ function lightUpLetter() {
   }
 }
 
+
 function mousePressed() {
 
   if (gameState == "start") {
     if (mouseX > 260 && mouseX < 440 && mouseY > 180 && mouseY < 240) {
-      userStartAudio();   
-      gameState = "instructions";   
+      getAudio();   
+      gameState = "instructions";
     }
     return;
   }
 
   if (gameState == "instructions") {
     if (mouseX > 260 && mouseX < 440 && mouseY > 335 && mouseY < 385) {
-      userStartAudio();
+      getAudio();
       startGame();
     }
     return;
   }
- 
+
   if (gameState == "done") {
     if (mouseX > 150 && mouseX < 330 && mouseY > 345 && mouseY < 395) {
-      userStartAudio();
-      startGame(); 
+      getAudio();
+      startGame();   
     }
     if (mouseX > 370 && mouseX < 550 && mouseY > 345 && mouseY < 395) {
       goHome();
@@ -515,7 +550,7 @@ function mousePressed() {
   if (gameState == "countdown") {
     return;
   }
- 
+
   for (var i = 0; i < letters.length; i++) {
     var d = dist(mouseX, mouseY, letters[i].x, letters[i].y);
 
@@ -541,19 +576,18 @@ function letterClicked(i) {
     startNextRound();
     return;
   }
+
   if (i != litIndex) {
     wrongCount = wrongCount + 1;
-    showMessage("Wrong letter! +" + PENALTY_MS + " ms", "tomato");   
+    showMessage("Wrong letter! +" + PENALTY_MS + " ms", "tomato");
     return;
   }
 
   var reactionTime = round(millis() - cueTime);
-  times.push(reactionTime);       
+  times.push(reactionTime);        
   letters[i].visible = false;
   lettersLeft = lettersLeft - 1;
 
   playBeep(1200);
   showMessage("CORRECT " + reactionTime + " ms", "lightgreen");
-  startNextRound();
-}
-
+  startNextRoun
