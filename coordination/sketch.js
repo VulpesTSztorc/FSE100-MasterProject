@@ -23,6 +23,8 @@ let doneTime = 0;
 let gameOver = false;
 let gameWon = false;
 
+const windowWidth = 700;
+const windowHeight = 500;
 function setup() {
   //IMPORTANT, to miranda: when updating, DO NOT TOUCH THESE NEXT 2 LINES!!
   let cnv = createCanvas(windowWidth, windowHeight);
