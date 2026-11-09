@@ -23,11 +23,11 @@ let doneTime = 0;
 let gameOver = false;
 let gameWon = false;
 
-const windowWidth = 700;
-const windowHeight = 500;
+const CANVAS_W = 700;
+const CANVAS_H = 500;
 function setup() {
   //IMPORTANT, to miranda: when updating, DO NOT TOUCH THESE NEXT 2 LINES!!
-  let cnv = createCanvas(windowWidth, windowHeight);
+  let cnv = createCanvas(CANVAS_W,CANVAS_H);
   cnv.parent('canvas-box');
 
   loadLevel(1);
