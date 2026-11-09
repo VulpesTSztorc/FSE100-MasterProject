@@ -24,8 +24,10 @@ let gameOver = false;
 let gameWon = false;
 
 function setup() {
+  //IMPORTANT, to miranda: when updating, DO NOT TOUCH THESE NEXT 2 LINES!!
   let cnv = createCanvas(windowWidth, windowHeight);
   cnv.parent('canvas-box');
+
   loadLevel(1);
 
   describe('The word " Click on the left circle" is written in black across a lime square. Two circles below change color when hovered. Clicking the correct circle shows a "Correct" message in the top-left corner and moves to the next level. Clicking the wrong circle shows an "Incorrect, please try again!" message and costs time. A timer counts down in the top-right corner.');
