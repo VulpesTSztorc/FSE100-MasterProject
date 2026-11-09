@@ -1,26 +1,34 @@
 let currentLevel = 1;
+const MAX_LEVEL = 4;
+let score = 0;
 let wrongAttempts = 0;
 const MAX_ATTEMPTS = 3;
-
-let walls = [];
+let isGameOver = false;
 
 let shapes = [];
 let targets = [];
+let walls = [];
 
 let feedbackText = "";
 let feedbackColor = null;
 let feedbackTimer = 0;
 let levelTransitionTimer = 0;
 
+let audioCtx = null;
+
 function setup() {
-  let cnv = createCanvas(950, 620);
-  cnv.parent("canvas-box");
+  createCanvas(950, 620);
   textFont('sans-serif');
   loadLevel(1);
 }
 
 function draw() {
   background(255);
+
+  if (isGameOver) {
+    drawEndScreen();
+    return;
+  }
 
   for (let t of targets) {
     fill(180);
@@ -29,7 +37,23 @@ function draw() {
     renderShape(t.type, t.x, t.y, t.size);
   }
 
+  for (let w of walls) {
+    if (w.speedY) {
+      w.y += w.speedY;
+      if (w.y < w.minY || w.y + w.h > w.maxY) {
+        w.speedY *= -1;
+      }
+    }
+    fill(60);
+    stroke(20);
+    strokeWeight(2);
+    rect(w.x, w.y, w.w, w.h, 6);
+  }
+
   for (let s of shapes) {
+    if (s.isDragging && !s.isLocked) {
+      checkWallCollision(s);
+    }
     fill(s.r, s.g, s.b);
     stroke(40);
     strokeWeight(1.5);
@@ -40,7 +64,7 @@ function draw() {
     fill(feedbackColor);
     stroke(60);
     strokeWeight(2);
-    rect(width / 2 - 135, height / 2 - 55, 270, 110, 15);
+    rect(width / 2 - 145, height / 2 - 55, 290, 110, 15);
 
     fill(0);
     noStroke();
@@ -52,13 +76,32 @@ function draw() {
 
   if (levelTransitionTimer > 0 && millis() > levelTransitionTimer) {
     levelTransitionTimer = 0;
-    if (currentLevel === 1) {
-      loadLevel(2);
+    if (currentLevel < MAX_LEVEL) {
+      loadLevel(currentLevel + 1);
     } else {
-      showFeedback("Activity Complete!", 145, 195, 125, 3000);
-      loadLevel(1);
+      isGameOver = true;
+      playWinSound();
     }
   }
+}
+
+function drawEndScreen() {
+  fill(145, 195, 125);
+  stroke(60);
+  strokeWeight(2);
+  rect(width / 2 - 200, height / 2 - 110, 400, 220, 20);
+
+  fill(0);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textSize(28);
+  text("All Levels Complete!", width / 2, height / 2 - 45);
+  textSize(22);
+  text("Final Score: " + score, width / 2, height / 2 + 5);
+  textSize(16);
+  fill(40);
+  text("Click anywhere to play again", width / 2, height / 2 + 60);
+  textAlign(LEFT, BASELINE);
 }
 
 function loadLevel(lvl) {
@@ -66,14 +109,14 @@ function loadLevel(lvl) {
   wrongAttempts = 0;
   shapes = [];
   targets = [];
+  walls = [];
 
   if (lvl === 1) {
     targets = [
-      { type: "triangle", x: 800, y: 130, size: 100, isFilled: false },
-      { type: "circle",   x: 800, y: 260, size: 90,  isFilled: false },
-      { type: "diamond",  x: 800, y: 390, size: 90,  isFilled: false }
+      { type: "triangle", x: 820, y: 140, size: 100, isFilled: false },
+      { type: "circle",   x: 820, y: 310, size: 90,  isFilled: false },
+      { type: "diamond",  x: 820, y: 480, size: 90,  isFilled: false }
     ];
-
     shapes = [
       { type: "circle",   size: 80,  r: 0,   g: 0,   b: 255 },
       { type: "triangle", size: 100, r: 255, g: 0,   b: 0   },
@@ -81,21 +124,52 @@ function loadLevel(lvl) {
     ];
   } else if (lvl === 2) {
     targets = [
-      { type: "diamond",   x: 800, y: 130, size: 80, isFilled: false },
-      { type: "trapezoid", x: 800, y: 260, size: 85, isFilled: false },
-      { type: "pentagon",  x: 800, y: 390, size: 75, isFilled: false }
+      { type: "diamond",   x: 820, y: 140, size: 80, isFilled: false },
+      { type: "trapezoid", x: 820, y: 310, size: 85, isFilled: false },
+      { type: "pentagon",  x: 820, y: 480, size: 75, isFilled: false }
     ];
-
     shapes = [
       { type: "trapezoid", size: 85, r: 65,  g: 130, b: 230 },
       { type: "diamond",   size: 80, r: 255, g: 0,   b: 255 },
       { type: "pentagon",  size: 75, r: 255, g: 150, b: 0   }
     ];
+  } else if (lvl === 3) {
+    targets = [
+      { type: "triangle", x: 820, y: 140, size: 90, isFilled: false },
+      { type: "circle",   x: 820, y: 310, size: 85, isFilled: false },
+      { type: "diamond",  x: 820, y: 480, size: 85, isFilled: false }
+    ];
+    shapes = [
+      { type: "circle",   size: 75, r: 0,   g: 0,   b: 255 },
+      { type: "triangle", size: 85, r: 255, g: 0,   b: 0   },
+      { type: "diamond",  size: 80, r: 0,   g: 255, b: 0   }
+    ];
+    walls = [
+      { x: 550, y: 0,   w: 25, h: 240 },
+      { x: 550, y: 380, w: 25, h: 240 }
+    ];
+  } else if (lvl === 4) {
+    targets = [
+      { type: "pentagon",  x: 820, y: 110, size: 70, isFilled: false },
+      { type: "trapezoid", x: 820, y: 240, size: 75, isFilled: false },
+      { type: "diamond",   x: 820, y: 370, size: 70, isFilled: false },
+      { type: "circle",    x: 820, y: 500, size: 70, isFilled: false }
+    ];
+    shapes = [
+      { type: "trapezoid", size: 65, r: 65,  g: 130, b: 230 },
+      { type: "diamond",   size: 65, r: 255, g: 0,   b: 255 },
+      { type: "pentagon",  size: 65, r: 255, g: 150, b: 0   },
+      { type: "circle",    size: 65, r: 0,   g: 200, b: 120 }
+    ];
+    walls = [
+      { x: 460, y: 60,  w: 25, h: 220, speedY: 2.5,  minY: 20, maxY: 600 },
+      { x: 640, y: 340, w: 25, h: 220, speedY: -2.5, minY: 20, maxY: 600 }
+    ];
   }
 
   for (let s of shapes) {
-    let randX = random(100, 500);
-    let randY = random(80, 500);
+    let randX = random(80, 360);
+    let randY = random(80, 540);
     s.x = randX;
     s.y = randY;
     s.startX = randX;
@@ -142,17 +216,96 @@ function renderShape(type, x, y, size) {
   }
 }
 
+function checkWallCollision(s) {
+  let r = s.size * 0.42;
+  for (let w of walls) {
+    let hit = (s.x + r > w.x) &&
+              (s.x - r < w.x + w.w) &&
+              (s.y + r > w.y) &&
+              (s.y - r < w.y + w.h);
+
+    if (hit) {
+      s.x = s.startX;
+      s.y = s.startY;
+      s.isDragging = false;
+      applyPenalty("Hit a wall! -5 pts");
+      break;
+    }
+  }
+}
+
+function applyPenalty(reasonText) {
+  score = max(0, score - 5);
+  wrongAttempts++;
+  playNegativeSound();
+
+  if (wrongAttempts >= MAX_ATTEMPTS) {
+    showFeedback(reasonText + "\nRestarting level...", 235, 160, 155, 1600);
+    loadLevel(currentLevel);
+  } else {
+    showFeedback(reasonText + "\nScore: " + score, 235, 160, 155, 1100);
+  }
+}
+
 function showFeedback(text, r, g, b, durationMs) {
   feedbackText = text;
   feedbackColor = color(r, g, b);
   feedbackTimer = millis() + durationMs;
 }
 
-function resetActivity() {
-  loadLevel(currentLevel);
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function playTone(freq, type, duration, delay = 0) {
+  initAudio();
+  let osc = audioCtx.createOscillator();
+  let gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime + delay);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(audioCtx.currentTime + delay);
+  osc.stop(audioCtx.currentTime + delay + duration);
+}
+
+function playPositiveSound() {
+  playTone(523.25, 'sine', 0.12, 0);
+  playTone(659.25, 'sine', 0.22, 0.1);
+}
+
+function playNegativeSound() {
+  playTone(180, 'sawtooth', 0.18, 0);
+  playTone(130, 'sawtooth', 0.28, 0.14);
+}
+
+function playWinSound() {
+  playTone(523.25, 'triangle', 0.12, 0);
+  playTone(659.25, 'triangle', 0.12, 0.12);
+  playTone(783.99, 'triangle', 0.12, 0.24);
+  playTone(1046.50, 'triangle', 0.35, 0.36);
 }
 
 function mousePressed() {
+  initAudio();
+
+  if (isGameOver) {
+    isGameOver = false;
+    score = 0;
+    loadLevel(1);
+    return;
+  }
+
   if (levelTransitionTimer > 0) return;
 
   for (let i = shapes.length - 1; i >= 0; i--) {
@@ -170,15 +323,20 @@ function mousePressed() {
 }
 
 function mouseDragged() {
+  if (isGameOver) return;
+
   for (let s of shapes) {
     if (s.isDragging && !s.isLocked) {
       s.x = mouseX + s.offsetX;
       s.y = mouseY + s.offsetY;
+      checkWallCollision(s);
     }
   }
 }
 
 function mouseReleased() {
+  if (isGameOver) return;
+
   for (let s of shapes) {
     if (s.isDragging) {
       let r = s.size / 2;
@@ -186,7 +344,7 @@ function mouseReleased() {
 
       for (let t of targets) {
         let d = dist(s.x, s.y, t.x, t.y);
-        if (d < t.size / 2 + 10) {
+        if (d < t.size / 2 + 12) {
           matchedTarget = t;
           break;
         }
@@ -199,34 +357,36 @@ function mouseReleased() {
           s.isLocked = true;
           matchedTarget.isFilled = true;
           s.isDragging = false;
+          score += 10;
+          playPositiveSound();
 
           let allDone = shapes.every(shape => shape.isLocked);
           if (allDone) {
-            showFeedback("CORRECT!\nNext Level...", 145, 195, 125, 1600);
-            levelTransitionTimer = millis() + 1600;
+            if (currentLevel < MAX_LEVEL) {
+              showFeedback("Level Complete!\nScore: " + score, 145, 195, 125, 1500);
+            } else {
+              showFeedback("Final Level Clear!\nScore: " + score, 145, 195, 125, 1500);
+            }
+            levelTransitionTimer = millis() + 1500;
           } else {
-            showFeedback("CORRECT", 145, 195, 125, 900);
+            showFeedback("CORRECT! +10 pts\nScore: " + score, 145, 195, 125, 900);
           }
         } else {
           s.x = s.startX;
           s.y = s.startY;
           s.isDragging = false;
-          wrongAttempts++;
-
-          if (wrongAttempts >= MAX_ATTEMPTS) {
-            showFeedback("Incorrect.\nRestarting activity...", 235, 160, 155, 1800);
-            resetActivity();
-          } else {
-            showFeedback("Shape does not\nmatch! Try again...", 235, 160, 155, 1200);
-          }
+          applyPenalty("Wrong shape! -5 pts");
         }
       } else {
         let isOutside = (s.x - r < 0) || (s.x + r > width) || (s.y - r < 0) || (s.y + r > height);
         if (isOutside) {
           s.x = s.startX;
           s.y = s.startY;
+          s.isDragging = false;
+          applyPenalty("Out of bounds! -5 pts");
+        } else {
+          s.isDragging = false;
         }
-        s.isDragging = false;
       }
     }
   }
