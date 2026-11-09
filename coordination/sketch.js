@@ -24,8 +24,7 @@ let gameOver = false;
 let gameWon = false;
 
 function setup() {
-  let cnv = createCanvas(windowWidth, windowHeight);
-  cnv.parent('canvas-box');
+  createCanvas(windowWidth, windowHeight);
   loadLevel(1);
 
   describe('The word " Click on the left circle" is written in black across a lime square. Two circles below change color when hovered. Clicking the correct circle shows a "Correct" message in the top-left corner and moves to the next level. Clicking the wrong circle shows an "Incorrect, please try again!" message and costs time. A timer counts down in the top-right corner.');
@@ -97,7 +96,7 @@ function draw() {
   stroke('black');
   strokeWeight(1);
   fill('#d6f1ff');
-  rect(300, 90, 140, 95);
+  rect(290, 90, 140, 95);
 
   fill('black');
   noStroke();
@@ -108,11 +107,11 @@ function draw() {
   // Right circle (red on hover)
   stroke('black');
   strokeWeight(1);
-  fill(dist(ax, ay, mouseX, mouseY) < aw / 2 ? 'red' : 'white');
+  fill(dist(ax, ay, mouseX, mouseY) < aw / 2 ? 'pink' : 'white');
   circle(ax, ay, aw);
 
   // Left circle (lime on hover)
-  fill(dist(rx, ry, mouseX, mouseY) < rw / 2 ? 'lime' : 'white');
+  fill(dist(rx, ry, mouseX, mouseY) < rw / 2 ? 'purple' : 'white');
   circle(rx, ry, rw);
 
   // Level and timer (top-right)
