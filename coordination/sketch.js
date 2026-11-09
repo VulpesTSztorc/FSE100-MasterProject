@@ -24,7 +24,7 @@ let gameOver = false;
 let gameWon = false;
 
 function setup() {
-  let cnv = reateCanvas(windowWidth, windowHeight);
+  let cnv = createCanvas(windowWidth, windowHeight);
   cnv.parent('canvas-box');
   loadLevel(1);
 
