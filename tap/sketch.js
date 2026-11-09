@@ -16,8 +16,6 @@ const CANV_H = 750;
 const CANV_W = 1000;
 const FPS    = 120;
 
-//define start menu buttons
-
 function setup() {
   //link canvas size to HTML
   let cnv = createCanvas(CANV_W,CANV_H);
@@ -39,19 +37,6 @@ function resetSketch(){
     balArr.splice(i);
 }
 
-//define function to check intervals
-let msNew;
-let msOld=0;
-function mils(x){
-  msNew=millis();
-  if(msNew-msOld >= x){
-    msOld=msNew;
-    return true;
-  } else {
-    return false;
-  }
-}
-
 //helper function that fills new arrays with data
 function spawnBalloon(arr){
   let tmpRad = 50;
@@ -63,7 +48,7 @@ function spawnBalloon(arr){
   arr.push([tmpX,tmpY,tmpRad,tmpVel,tmpDir]);
 }
 
-
+//define textbox/button dimensions
 const TBOX_H = 65;
 const TBOX_W = 400;
 const TBOX_X = CANV_W/2-TBOX_W/2;
@@ -86,7 +71,7 @@ const STRT_W = 200;
 const STRT_X = CANV_W/2-STRT_W/2
 const STRT_Y = DIFF_Y + (STRT_H+15)
 
-var mouseIncr = 0;
+var mouseIncr = 0; //make sure a click only works ONCE
 
 function drawStart(){
   background("#aaaaaa");
@@ -107,6 +92,7 @@ function drawStart(){
   textSize(32);
   text(initVal,DIFF_X,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),DIFF_W-5);
 
+  //check for mouse click.
   if(mouseIsPressed){
     mouseIncr++;
   } else {
@@ -114,13 +100,16 @@ function drawStart(){
   }
 
   //minus
+  //checking if hover
   if(mouseX<BUMI_X+BU_W && mouseX>BUMI_X && mouseY<BUMI_Y+BU_H && mouseY>BUMI_Y){
     fill("green");
+    //check for click. only accept first increment
     if(mouseIncr==1 && initVal > 1)
       initVal--;
   } else {
     fill("white");
   }
+  //render
   rect(BUMI_X,BUMI_Y,BU_W,BU_H,12);
   fill(0);
   text('-',BUMI_X,CANV_H/2-DIFF_H/2-(100-DIFF_H/2),BU_W-5);
@@ -150,39 +139,8 @@ function drawStart(){
   }
   rect(STRT_X,STRT_Y,STRT_W,STRT_H,12);
   fill(0);
-  text("start",STRT_X,STRT_Y+20,STRT_W-5);
-  
-  
+  text("start",STRT_X,STRT_Y+20,STRT_W-5);  
 }
-
-
-/*
-function drawStart(){
-  background("#aaaaaa");
-  //game over box
-  fill("#ffffff");
-  stroke("#ffffff");
-  rect(CANV_W/2-RECT_W/2,CANV_H/2-RECT_H/2,RECT_W,RECT_H,12);
-  //"GAME OVER"
-  fill(0);
-  stroke(0);
-  textAlign(CENTER,TOP);
-  textSize(48);
-  text("WELCOME",CANV_W/2,CANV_H/2-(RECT_H/2-15));
-  //score display
-  textSize(32);
-  //text("Score: " + score,CANV_W/2,CANV_H/2-(RECT_H/2-64));
-  //restart directions
-  textSize(24);
-  textAlign(CENTER,BOTTOM);
-  text("Click anywhere to begin!",CANV_W/2,CANV_H/2+(RECT_H/2-15));
-  if(mouseIsPressed){
-    resetSketch();
-    game=true;
-    stMenu=false;
-  }
-}
-*/
 
 function drawGameover(){
   //me when im in an unreadable code competition and my
@@ -229,9 +187,7 @@ function main() {
   }
 
   //render each ball
-  //for(let i in balArr){
-  //if(mils(1000/120)) update = true;
-  //update=true;
+  //if(mils(1000/120)) update = true; //replaced with FPS
   for(let i=0;i<balArr.length;i++){
     let actArr = balArr[i];
     //manage frame rate and speed. set to 120.
