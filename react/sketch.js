@@ -590,4 +590,5 @@ function letterClicked(i) {
 
   playBeep(1200);
   showMessage("CORRECT " + reactionTime + " ms", "lightgreen");
-  startNextRoun
+  startNextRound();
+}
