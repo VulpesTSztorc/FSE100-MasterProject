@@ -17,7 +17,8 @@ let levelTransitionTimer = 0;
 let audioCtx = null;
 
 function setup() {
-  createCanvas(950, 620);
+  let cnv = createCanvas(950, 620);
+  cnv.parent('canvas-box');
   textFont('sans-serif');
   loadLevel(1);
 }
